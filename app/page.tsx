@@ -1,8 +1,12 @@
+import WEYWLogo from "@/components/Logo";
+import HomeClient from "./HomeClient";
+
 export default function Page() {
   return (
-    <main style={{ padding: 24 }}>
-      <h1>Inicio</h1>
-      <p>Estructura creada.</p>
+    <main className="min-h-screen p-6">
+      <WEYWLogo />
+      <p className="mt-4 text-gray-600">Haz tu reserva para obtener el link de pago.</p>
+      <HomeClient />
     </main>
   );
 }
