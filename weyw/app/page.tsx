@@ -1,3 +1,4 @@
+import WEYWLogo from '@/components/Logo'
 import ReservationForm from '@/components/ReservationForm'
 
 export default function Home() {
@@ -5,11 +6,9 @@ export default function Home() {
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
       <div className="container mx-auto px-4 py-8">
         <header className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-gray-900 mb-4">
-            Los que se fueron… vuelven cuando deciden.
-          </h1>
-          <p className="text-xl text-gray-600">
-            Reserva tu vuelo con US$99. Paga el resto después — o activa tu Puente Solidario.
+          <WEYWLogo />
+          <p className="text-xl text-gray-600 mt-4">
+            Reserva tu vuelo con US$99. Paga después o activa tu Puente Solidario.
           </p>
         </header>
         
