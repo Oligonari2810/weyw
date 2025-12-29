@@ -1,5 +1,10 @@
 // components/Logo.tsx
-export default function WEYWLogo({ size = "text-6xl", className = "" }) {
+type Props = {
+  size?: string;
+  className?: string;
+};
+
+export default function WEYWLogo({ size = "text-6xl", className = "" }: Props) {
   return (
     <div
       className={`font-bold ${size} ${className}`}
