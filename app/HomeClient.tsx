@@ -25,18 +25,17 @@ export default function HomeClient() {
               headers: { "content-type": "application/json" },
               body: JSON.stringify(data),
             });
-            const json = (await res.json().catch(() => null)) as ReserveResponse | null;
+            const json = (await res.json().catch(() => null)) as any;
 
-            if (!json || !("ok" in json) || !json.ok) {
-              const msg = json && "error" in json ? json.error : "Error desconocido";
+            if (!json || !json.success) {
+              const msg = json && json.error ? json.error : "Error desconocido";
               setError(msg);
               return;
             }
 
-            // MVP: redirige a confirmación con un código simple.
-            // Si tu tabla devuelve un `id` real, luego lo conectamos aquí.
-            const code = "OK";
-            const hash = "demo";
+            // Usa los datos de la respuesta
+            const code = json.reservation_code || "OK";
+            const hash = json.payment_hash || "demo";
             router.push(`/confirmacion?code=${encodeURIComponent(code)}&hash=${encodeURIComponent(hash)}`);
           } catch (e) {
             setError(e instanceof Error ? e.message : "Error inesperado");
