@@ -1,4 +1,5 @@
 import WEYWLogo from '@/components/Logo'
+import HomeClient from './HomeClient'
 
 export default function Page() {
   return (
@@ -9,6 +10,7 @@ export default function Page() {
           Reserva tu vuelo con US$99. Paga después o activa tu Puente Solidario.
         </p>
       </header>
+      <HomeClient />
     </main>
   )
 }
