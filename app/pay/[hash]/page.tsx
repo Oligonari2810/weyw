@@ -8,7 +8,7 @@ export default function PaymentPage() {
   const reservationCode = searchParams.get('code')
 
   // URL de pago simple (redirige a Stripe checkout directo)
-  const stripePaymentUrl = `https://buy.stripe.com/test_[YOUR_STRIPE_PAYMENT_LINK]`
+  const stripePaymentUrl = `https://buy.stripe.com/test_aFadRaf1K7FM4aE9r97Re00`
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-green-50 to-white py-16">
