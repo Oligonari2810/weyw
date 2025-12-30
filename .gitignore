@@ -20,3 +20,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Cursor extensions
+.cursor/
