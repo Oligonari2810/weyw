@@ -36,7 +36,8 @@ export default function HomeClient() {
             // Usa los datos de la respuesta
             const code = json.reservation_code || "OK";
             const hash = json.payment_hash || "demo";
-            router.push(`/confirmacion?code=${encodeURIComponent(code)}&hash=${encodeURIComponent(hash)}`);
+            // Redirige directamente a la página de pago
+            router.push(`/pay/${encodeURIComponent(hash)}?code=${encodeURIComponent(code)}`);
           } catch (e) {
             setError(e instanceof Error ? e.message : "Error inesperado");
           } finally {
