@@ -72,12 +72,20 @@ export async function POST(req: Request) {
     const errorMessage = error instanceof Error ? error.message : "Error desconocido";
     const errorDetails = error instanceof Error ? error.stack : String(error);
     
+    // Log detallado del error (siempre visible en logs de Vercel)
     console.error("Detalles del error:", errorDetails);
+    
+    // Si es un error de Stripe, incluir más detalles
+    if (error && typeof error === 'object' && 'type' in error) {
+      console.error("Stripe error type:", (error as any).type);
+      console.error("Stripe error code:", (error as any).code);
+      console.error("Stripe error message:", (error as any).message);
+    }
     
     return NextResponse.json(
       { 
         error: "Error al crear sesión de pago",
-        details: process.env.NODE_ENV === 'development' ? errorMessage : undefined
+        details: errorMessage // Mostrar el error siempre para debug
       },
       { status: 500 }
     );
