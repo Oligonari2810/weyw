@@ -30,35 +30,73 @@ export default function SuccessPage({ params }: PageProps) {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase
-      .from('weyw_bookings')
-      .update({
-        // Datos del pasaporte (obligatorio para reserva aérea)
-        first_name: form.applicantFirstName,
-        last_name: form.applicantLastName,
-        passport_number: form.applicantPassport,
-        birth_date: form.applicantBirthDate,
-        
-        // Garantes comunitarios (validación social)
-        community_guarantors: JSON.stringify([
-          { email: form.guarantor1, name: 'Garante 1' },
-          { email: form.guarantor2, name: 'Garante 2' },
-          { email: form.guarantor3, name: 'Garante 3' },
-        ]),
-        
-        // Estatus de verificación
-        kyc_status: 'pending_guarantors', // Esperando validación
-      })
-      .eq('payment_hash', params.hash);
+    try {
+      // Primero intentamos update, si no existe la fila, hacemos upsert
+      const { data: existingData, error: checkError } = await supabase
+        .from('weyw_bookings')
+        .select('id')
+        .eq('payment_hash', params.hash)
+        .single();
 
-    if (error) {
-      console.error('Error:', error);
-      alert('Error al guardar datos. Contacta soporte.');
-    } else {
-      // Redirige a dashboard del usuario
-      router.push('/dashboard');
+      let error;
+
+      if (existingData) {
+        // Si existe, hacemos update
+        const { error: updateError } = await supabase
+          .from('weyw_bookings')
+          .update({
+            // Datos del pasaporte (obligatorio para reserva aérea)
+            first_name: form.applicantFirstName,
+            last_name: form.applicantLastName,
+            passport_number: form.applicantPassport,
+            birth_date: form.applicantBirthDate,
+            
+            // Garantes comunitarios (validación social)
+            community_guarantors: JSON.stringify([
+              { email: form.guarantor1, name: 'Garante 1' },
+              { email: form.guarantor2, name: 'Garante 2' },
+              { email: form.guarantor3, name: 'Garante 3' },
+            ]),
+            
+            // Estatus de verificación
+            kyc_status: 'pending_guarantors', // Esperando validación
+          })
+          .eq('payment_hash', params.hash);
+        error = updateError;
+      } else {
+        // Si no existe, creamos la fila
+        const { error: insertError } = await supabase
+          .from('weyw_bookings')
+          .insert({
+            payment_hash: params.hash,
+            first_name: form.applicantFirstName,
+            last_name: form.applicantLastName,
+            passport_number: form.applicantPassport,
+            birth_date: form.applicantBirthDate,
+            community_guarantors: JSON.stringify([
+              { email: form.guarantor1, name: 'Garante 1' },
+              { email: form.guarantor2, name: 'Garante 2' },
+              { email: form.guarantor3, name: 'Garante 3' },
+            ]),
+            kyc_status: 'pending_guarantors',
+            deposit_paid: true,
+          });
+        error = insertError;
+      }
+
+      if (error) {
+        console.error('Error:', error);
+        alert(`Error al guardar datos: ${error.message}. Contacta soporte.`);
+      } else {
+        // Redirige a dashboard del usuario
+        router.push('/dashboard');
+      }
+    } catch (err) {
+      console.error('Error inesperado:', err);
+      alert('Error inesperado. Contacta soporte.');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
