@@ -60,6 +60,7 @@ export async function POST(req: Request) {
           deposit_amount: session.amount_total ? session.amount_total / 100 : 99, // Convertir centavos a dólares
           customer_email: customerEmail,
           created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         }, {
           onConflict: "payment_hash",
         });
