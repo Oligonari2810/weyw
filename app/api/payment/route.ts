@@ -7,8 +7,19 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
 
 export async function POST(req: Request) {
   try {
+    // Verificar que STRIPE_SECRET_KEY esté configurada
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.error("❌ STRIPE_SECRET_KEY no está configurada");
+      return NextResponse.json(
+        { error: "Configuración de Stripe faltante. Contacta soporte." },
+        { status: 500 }
+      );
+    }
+
     const body = await req.json();
     const { hash, code } = body;
+
+    console.log("💳 Creando Checkout Session:", { hash, code });
 
     if (!hash) {
       return NextResponse.json(
@@ -37,18 +48,19 @@ export async function POST(req: Request) {
       ],
       mode: 'payment',
       success_url: `${siteUrl}/success/${hash}?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${siteUrl}/pay/${hash}?code=${code}&canceled=true`,
+      cancel_url: `${siteUrl}/pay/${hash}?code=${code || ''}&canceled=true`,
       metadata: {
         payment_hash: hash,
         reservation_code: code || '',
       },
-      customer_email: body.email,
+      ...(body.email && { customer_email: body.email }),
     });
 
-    console.log("💳 Checkout Session creado:", {
+    console.log("✅ Checkout Session creado:", {
       sessionId: session.id,
       hash,
       code,
+      url: session.url,
     });
 
     return NextResponse.json({
@@ -56,9 +68,17 @@ export async function POST(req: Request) {
       url: session.url,
     });
   } catch (error) {
-    console.error("Error creando Checkout Session:", error);
+    console.error("❌ Error creando Checkout Session:", error);
+    const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+    const errorDetails = error instanceof Error ? error.stack : String(error);
+    
+    console.error("Detalles del error:", errorDetails);
+    
     return NextResponse.json(
-      { error: "Error al crear sesión de pago" },
+      { 
+        error: "Error al crear sesión de pago",
+        details: process.env.NODE_ENV === 'development' ? errorMessage : undefined
+      },
       { status: 500 }
     );
   }
